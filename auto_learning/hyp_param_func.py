@@ -1,9 +1,8 @@
 import itertools
-from sklearn.pipeline import Pipeline
-import numpy as np
 
-import GPy
 import GPyOpt
+import numpy as np
+from sklearn.pipeline import Pipeline
 
 from auto_learning.crossval_func import CROSSVAL_FUNCTIONS
 
@@ -17,7 +16,7 @@ def register_func(func):
 # 全探索
 @register_func
 def brute(config):
-    params_list, keys = _generate_all_combinations(config)   
+    params_list, keys = _generate_all_combinations(config)
     score_list = []
 
     for params in params_list:
@@ -30,7 +29,9 @@ def brute(config):
         else:
             est = config.est(**param_dict)
 
-        score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](est, config.x_train, config.y_train, config.metrics)
+        score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](
+            est, config.x_train, config.y_train, config.metrics
+        )
         score_list.append(score)
 
     if len(params_list) == 0:
@@ -47,13 +48,15 @@ def brute(config):
         else:
             est = config.est(**param_dict)
 
-    r2, y_test_list, y_test_predicted_list = CROSSVAL_FUNCTIONS[config.crossval_type](est, config.x_train, config.y_train, config.metrics)
+    r2, y_test_list, y_test_predicted_list =\
+        CROSSVAL_FUNCTIONS[config.crossval_type](
+            est, config.x_train, config.y_train, config.metrics
+        )
     return r2, y_test_list, y_test_predicted_list, est
 
 
 @register_func
 def bayes_Gpyopt(config):
-
     def cv(params):
         new_param_dict = {}
         for i, bound in enumerate(bounds):
@@ -73,7 +76,9 @@ def bayes_Gpyopt(config):
         else:
             est = config.est(**new_param_dict)
 
-        score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](est, config.x_train, config.y_train, config.metrics)
+        score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](
+            est, config.x_train, config.y_train, config.metrics
+        )
         return -float(score)
 
     if len(config.params_dict.keys()) == 0:
@@ -86,17 +91,19 @@ def bayes_Gpyopt(config):
             if max(values) > min(values) * 100:
                 log_flags[key] = True
                 bounds.append(
-                    {'name': key,
-                    'type': 'continuous',
-                    'domain': (np.log(min(values)), np.log(max(values)))
+                    {
+                        'name': key,
+                        'type': 'continuous',
+                        'domain': (np.log(min(values)), np.log(max(values)))
                     }
                 )
             else:
                 log_flags[key] = False
                 bounds.append(
-                    {'name': key,
-                    'type': 'continuous',
-                    'domain': (min(values), max(values))
+                    {
+                        'name': key,
+                        'type': 'continuous',
+                        'domain': (min(values), max(values))
                     }
                 )
             if all([type(j) == int for j in values]):
@@ -124,7 +131,10 @@ def bayes_Gpyopt(config):
         else:
             est = config.est(**optimized_params)
 
-    r2, y_test_list, y_test_predicted_list = CROSSVAL_FUNCTIONS[config.crossval_type](est, config.x_train, config.y_train, config.metrics)
+    r2, y_test_list, y_test_predicted_list =\
+        CROSSVAL_FUNCTIONS[config.crossval_type](
+            est, config.x_train, config.y_train, config.metrics
+            )
     return r2, y_test_list, y_test_predicted_list, est
 
 
@@ -140,7 +150,7 @@ def _generate_all_combinations(config):
             params_list = list(itertools.product(params_list,
                                list(config.params_dict.values())[i]))
             params_list = [list(temp) for temp in params_list]
-            if i >= 2 :
+            if i >= 2:
                 params_list = [temp[0]+[temp[1]] for temp in params_list]
 
     return params_list, keys
