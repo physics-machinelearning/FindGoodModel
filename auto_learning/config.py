@@ -11,7 +11,7 @@ class Config:
     def __init__(self, x_train=None, x_test=None, y_train=None, y_test=None,
                  est=None, feature_selection=None, param_dict=None,
                  problem_type=None, crossval_type=None, search_type=None):
-                 
+        
         self.__x_train = x_train
         self.y_train = y_train
         self.__x_test = x_test
@@ -31,7 +31,9 @@ class Config:
     @x_train.setter
     def x_train(self, value):
         if self.feature_selection != 'None':
-            temp, self.mask = SELECTION_FUNCTIONS[self.feature_selection](value, self.y_train, self.problem_type)
+            temp, self.mask = SELECTION_FUNCTIONS[self.feature_selection](
+                value, self.y_train, self.problem_type
+            )
         else:
             temp = value
             mask = np.ones(value.shape[1])
@@ -47,4 +49,3 @@ class Config:
     @x_test.setter
     def x_test(self, value):
         self.__x_test = self.sc.transform(value[:, self.mask])
-

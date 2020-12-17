@@ -4,15 +4,20 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+importlib-metadata = "2.0.0"
 numpy = "*"
 scikit-learn = "*"
-bayesian-optimization = "*"
+scipy = "*"
+GPy = "*"
+gpyopt = "*"
 auto-learning = {path = "."}
 
 [dev-packages]
 ipykernel = "*"
 jupyter = "*"
 matplotlib = "*"
+seaborn = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.7"

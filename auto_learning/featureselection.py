@@ -13,7 +13,8 @@ def selectfrommodel(x_train, y_train, problem_type):
     if problem_type == 'regression':
         selector = SelectFromModel(RandomForestRegressor(), threshold='median')
     elif problem_type == 'classification':
-        selector = SelectFromModel(RandomForestClassifier(), threshold='median')
+        selector = SelectFromModel(RandomForestClassifier(),
+                                   threshold='median')
     selector.fit(x_train, y_train)
     x_train_selected = selector.transform(x_train)
     mask = selector.get_support()
