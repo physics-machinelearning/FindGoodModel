@@ -2,7 +2,8 @@ import itertools
 from sklearn.pipeline import Pipeline
 import numpy as np
 
-from bayes_opt import BayesianOptimization
+import GPy
+import GPyOpt
 
 from auto_learning.crossval_func import CROSSVAL_FUNCTIONS
 
@@ -50,19 +51,20 @@ def brute(config):
     return r2, y_test_list, y_test_predicted_list, est
 
 
-# bayes-optimizationでハイパラ探索
 @register_func
-def bayes(config):
-    def cv(**param_dict):
+def bayes_Gpyopt(config):
+
+    def cv(params):
         new_param_dict = {}
-        for item in param_dict.items():
-            key, value = item
+        for i, bound in enumerate(bounds):
+            key = bound['name']
+            param = float(params[:, i])
             flag = log_flags[key]
             int_flag = int_flags[key]
             if flag:
-                new_param_dict[key] = np.exp(value)
+                new_param_dict[key] = np.exp(param)
             else:
-                new_param_dict[key] = value
+                new_param_dict[key] = param
             if int_flag:
                 new_param_dict[key] = int(new_param_dict[key])
 
@@ -72,31 +74,42 @@ def bayes(config):
             est = config.est(**new_param_dict)
 
         score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](est, config.x_train, config.y_train, config.metrics)
-        return score
+        return -float(score)
 
     if len(config.params_dict.keys()) == 0:
         est = config.est()
     else:
-        param_range = {}
+        bounds = []
         log_flags = {}
         int_flags = {}
-        for key, values in config.params_dict.items():
+        for i, (key, values) in enumerate(config.params_dict.items()):
             if max(values) > min(values) * 100:
                 log_flags[key] = True
-                param_range[key] = (np.log(min(values)), np.log(max(values)))
+                bounds.append(
+                    {'name': key,
+                    'type': 'continuous',
+                    'domain': (np.log(min(values)), np.log(max(values)))
+                    }
+                )
             else:
                 log_flags[key] = False
-                param_range[key] = (min(values), max(values))
-            if all([type(i) == int for i in values]):
+                bounds.append(
+                    {'name': key,
+                    'type': 'continuous',
+                    'domain': (min(values), max(values))
+                    }
+                )
+            if all([type(j) == int for j in values]):
                 int_flags[key] = True
             else:
                 int_flags[key] = False
 
-        bo = BayesianOptimization(cv, param_range, verbose=2, random_state=0)
-        bo.maximize(init_points=1, n_iter=20, acq='ei')
+        bo = GPyOpt.methods.BayesianOptimization(cv, bounds)
+        bo.run_optimization(max_iter=20)
         optimized_params = {}
-        for key in bo.max['params']:
-            value = bo.max['params'][key]
+        for i, bound in enumerate(bounds):
+            key = bound['name']
+            value = bo.x_opt[i]
             flag = log_flags[key]
             int_flag = int_flags[key]
             if flag:

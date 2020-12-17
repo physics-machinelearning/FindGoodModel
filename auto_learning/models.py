@@ -105,20 +105,3 @@ def gbc():
               'min_samples_leaf': [3, 5, 9, 17],
               'max_features': [0.1, 0.3, 1.0]}
     return GradientBoostingClassifier, params
-
-
-@register_cla
-def rfc_cc():
-    params = {'max_depth':[5]}
-    ClassifierChain.est = RandomForestClassifier
-    return ClassifierChain, params
-
-
-@register_cla
-def svrsvc():
-    params = {'C':[2**i for i in range(-5, 10)],
-              'gamma':[2**i for i in range(-10, 5)]}
-    regr_est = SVR(C=0.9830737574223468, epsilon=0.0009765625, gamma=0.023430354117355515)
-    RegrClas.regr_est = regr_est
-    RegrClas.class_est = SVC
-    return RegrClas, params

@@ -28,64 +28,49 @@ class HypParamSearch:
         test_score = METRICS_FUNCTIONS[self.config.metrics](self.config.y_test, y_test_predicted)
         return self.config.y_test, y_test_predicted, val_score, test_score, est
 
-# if __name__ == '__main__':
-#     import pandas as pd
-#     import numpy as np
-#     import seaborn as sns
-#     from sklearn.metrics import confusion_matrix
-#     from sklearn.datasets import load_wine
-#     from sklearn.model_selection import train_test_split
-#     from sklearn.preprocessing import RobustScaler
-#     import matplotlib.pyplot as plt
-#     from models import CLASSIFICATION_MODELS, REGRESSION_MODELS
+if __name__ == '__main__':
+    import pandas as pd
+    import numpy as np
+    # import seaborn as sns
+    from sklearn.metrics import confusion_matrix
+    from sklearn.datasets import load_wine, load_diabetes
+    from sklearn.model_selection import train_test_split
+    from sklearn.preprocessing import RobustScaler
+    import matplotlib.pyplot as plt
+    from models import CLASSIFICATION_MODELS, REGRESSION_MODELS
 
-#     red_df = pd.read_csv('winequality-red.csv', sep=';')
-#     x = red_df.loc[:, red_df.columns != 'quality'].values
-#     y = red_df['quality'].values
+    data = load_diabetes()
+    x_train, x_test, y_train, y_test = train_test_split(data.data, data.target, test_size=0.3)
 
-#     # transformer = RobustScaler().fit(x)
-#     # x = transformer.transform(x)
-#     x = np.log(x+1)
-#     y = np.array(y, int)
+    feature_selection = 'None'
+    crossval_type = 'kfold'
+    search_type = 'bayes_Gpyopt'
+    metrics = 'r2'
+    problem_type = 'regression'
 
-#     # data = load_wine()
-#     # x = data.data
-#     # y = data.target
+    for func in REGRESSION_MODELS.values():
+        est, params = func()
+        hyp = HypParamSearch(x_train,
+                             y_train,
+                             x_test,
+                             y_test,
+                             est,
+                             problem_type,
+                             feature_selection,
+                             params,
+                             crossval_type,
+                             search_type,
+                             metrics)
+        y_test_list, y_test_predicted_list, val_score, test_score, est = hyp.hyp_param_search()
 
-#     x_train, y_train, x_test, y_test = train_test_split(x, y, test_size=0.3)
+        print(est)
 
-#     feature_selection = 'None'
-#     crossval_type = 'kfold'
-#     search_type = 'bayes'
-#     metrics = 'accuracy'
-#     problem_type = 'classification'
+        plt.figure()
+        plt.scatter(y_test_list, y_test_predicted_list)
+        plt.show()
 
-#     for func in CLASSIFICATION_MODELS.values():
-#         est, params = func()
-#         hyp = HypParamSearch(x_train,
-#                              x_test,
-#                              y_train,
-#                              y_test,
-#                              est,
-#                              problem_type,
-#                              feature_selection,
-#                              params,
-#                              crossval_type,
-#                              search_type,
-#                              metrics)
-#         y_test_list, y_test_predicted_list, val_score, test_score, est = hyp.hyp_param_search()
+        print(val_score, test_score)
 
-#         print(est)
-
-#         plt.figure()
-#         plt.scatter(y_test_list, y_test_predicted_list)
-#         plt.show()
-
-#         print(val_score, test_score)
-
-#         y_test_predicted_list = np.array(y_test_predicted_list, int)
-#         cm = confusion_matrix(y_test_list, y_test_predicted_list)
-
-#         sns.heatmap(cm)
-#         plt.show()
+        y_test_predicted_list = np.array(y_test_predicted_list, int)
+        cm = confusion_matrix(y_test_list, y_test_predicted_list)
 
