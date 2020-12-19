@@ -11,3 +11,8 @@ class InputParamError(Exception):
 class InputProblemtypeError(Exception):
     """problem typeがregressionでもclassificationでもない時のエラー"""
     pass
+
+
+class InputCrossvalTypeError(Exception):
+    """crossval_typeがCROSSVAL_FUNCTIONSに当てはまらない時のエラー"""
+    pass

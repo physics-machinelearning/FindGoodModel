@@ -2,8 +2,11 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from auto_learning.featureselection import SELECTION_FUNCTIONS
+from auto_learning.crossval_func import CROSSVAL_FUNCTIONS
+from auto_learning.hyp_param_func import HYPSEARCH_FUNCTIONS
 from auto_learning.exceptions import (
-    InputNanError, InputParamError, InputProblemtypeError
+    InputNanError, InputParamError, InputProblemTypeError,
+    InputCrossvalTypeError, InputSearchTypeError
 )
 
 
@@ -73,8 +76,28 @@ class Config:
     def problem_type(self):
         return self.__problem_type
 
-    @problem_type.seeter
+    @problem_type.setter
     def problem_type(self, value):
         if value not in ['regression', 'classification']:
-            raise InputProblemtypeError
+            raise InputProblemTypeError
         self.__problem_type = value
+
+    @property
+    def crossval_type(self):
+        return self.__crossval_type
+
+    @crossval_type.setter
+    def crossval_type(self, value):
+        if value not in CROSSVAL_FUNCTIONS.keys():
+            raise InputCrossvalTypeError
+        self.__crossval_type = value
+
+    @property
+    def search_type(self):
+        return self.__search_type
+
+    @search_type.setter
+    def search_type(self, value):
+        if value not in HYPSEARCH_FUNCTIONS.keys():
+            raise InputSearchTypeError
+        self.__search_type = value
