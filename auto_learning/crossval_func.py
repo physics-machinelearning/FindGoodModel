@@ -63,6 +63,7 @@ def r2(y_test_list, y_test_predicted_list):
 
 @register_metrics
 def accuracy(y_test_list, y_test_predicted_list):
+    score = accuracy_score(y_test_list, y_test_predicted_list)
     if math.isnan(score):
         raise MetricsScoreError('r2 scoreがNaNです')
     elif math.isinf(score):
