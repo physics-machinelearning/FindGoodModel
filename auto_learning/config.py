@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from auto_learning.featureselection import SELECTION_FUNCTIONS
+from auto_learning.exceptions import InputNanError
 
 
 class Config:
@@ -30,6 +31,9 @@ class Config:
 
     @x_train.setter
     def x_train(self, value):
+        if np.isnan(value).all():
+            raise InputNanError
+
         if self.feature_selection != 'None':
             temp, self.mask = SELECTION_FUNCTIONS[self.feature_selection](
                 value, self.y_train, self.problem_type
@@ -48,4 +52,7 @@ class Config:
 
     @x_test.setter
     def x_test(self, value):
+        if np.isnan(value).all():
+            raise InputNanError
+
         self.__x_test = self.sc.transform(value[:, self.mask])
