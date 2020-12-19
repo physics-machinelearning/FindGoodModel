@@ -56,7 +56,7 @@ def brute(config):
 
 
 @register_func
-def bayes_Gpyopt(config):
+def bayes(config):
     def cv(params):
         new_param_dict = {}
         for i, bound in enumerate(bounds):
