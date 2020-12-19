@@ -6,3 +6,8 @@ class InputNanError(Exception):
 class InputParamError(Exception):
     """param_dictがdictionary出なかった時あげるエラー"""
     pass
+
+
+class InputProblemtypeError(Exception):
+    """problem typeがregressionでもclassificationでもない時のエラー"""
+    pass

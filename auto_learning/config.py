@@ -2,7 +2,9 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from auto_learning.featureselection import SELECTION_FUNCTIONS
-from auto_learning.exceptions import InputNanError, InputParamError
+from auto_learning.exceptions import (
+    InputNanError, InputParamError, InputProblemtypeError
+)
 
 
 class Config:
@@ -66,3 +68,13 @@ class Config:
         if type(value) != dict:
             raise InputParamError
         self.__param_dict = value
+
+    @property
+    def problem_type(self):
+        return self.__problem_type
+
+    @problem_type.seeter
+    def problem_type(self, value):
+        if value not in ['regression', 'classification']:
+            raise InputProblemtypeError
+        self.__problem_type = value
