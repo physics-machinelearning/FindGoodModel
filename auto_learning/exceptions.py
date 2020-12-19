@@ -8,11 +8,21 @@ class InputParamError(Exception):
     pass
 
 
-class InputProblemtypeError(Exception):
+class InputProblemTypeError(Exception):
     """problem typeがregressionでもclassificationでもない時のエラー"""
     pass
 
 
 class InputCrossvalTypeError(Exception):
     """crossval_typeがCROSSVAL_FUNCTIONSに当てはまらない時のエラー"""
+    pass
+
+
+class InputSearchTypeError(Exception):
+    """crossval_typeがHYPSEARCH_FUNCTIONSに当てはまらない時のエラー"""
+    pass
+
+
+class InputMetricsError(Exception):
+    """metricsが METRICS_FUNCTIONSに当てはまらない時のエラー"""
     pass

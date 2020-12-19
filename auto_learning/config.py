@@ -2,11 +2,11 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from auto_learning.featureselection import SELECTION_FUNCTIONS
-from auto_learning.crossval_func import CROSSVAL_FUNCTIONS
+from auto_learning.crossval_func import CROSSVAL_FUNCTIONS, METRICS_FUNCTIONS
 from auto_learning.hyp_param_func import HYPSEARCH_FUNCTIONS
 from auto_learning.exceptions import (
     InputNanError, InputParamError, InputProblemTypeError,
-    InputCrossvalTypeError, InputSearchTypeError
+    InputCrossvalTypeError, InputSearchTypeError, InputMetricsError
 )
 
 
@@ -16,7 +16,8 @@ class Config:
     """
     def __init__(self, x_train=None, x_test=None, y_train=None, y_test=None,
                  est=None, feature_selection=None, param_dict=None,
-                 problem_type=None, crossval_type=None, search_type=None):
+                 problem_type=None, crossval_type=None, search_type=None,
+                 metrics=None):
         
         self.__x_train = x_train
         self.y_train = y_train
@@ -28,6 +29,7 @@ class Config:
         self.__problem_type = problem_type
         self.__crossval_type = crossval_type
         self.__search_type = search_type
+        self.__metrics = metrics
         self.mask = None
 
     @property
@@ -101,3 +103,13 @@ class Config:
         if value not in HYPSEARCH_FUNCTIONS.keys():
             raise InputSearchTypeError
         self.__search_type = value
+
+    @property
+    def metrics(self):
+        return self.__metrics
+
+    @metrics.setter
+    def metrics(self, value):
+        if value not in METRICS_FUNCTIONS.keys():
+            raise InputMetricsError
+        self.__metrics = value
