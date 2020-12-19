@@ -2,6 +2,12 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from auto_learning.featureselection import SELECTION_FUNCTIONS
+from auto_learning.crossval_func import CROSSVAL_FUNCTIONS, METRICS_FUNCTIONS
+from auto_learning.hyp_param_func import HYPSEARCH_FUNCTIONS
+from auto_learning.exceptions import (
+    InputNanError, InputParamError, InputProblemTypeError,
+    InputCrossvalTypeError, InputSearchTypeError, InputMetricsError
+)
 
 
 class Config:
@@ -10,7 +16,8 @@ class Config:
     """
     def __init__(self, x_train=None, x_test=None, y_train=None, y_test=None,
                  est=None, feature_selection=None, param_dict=None,
-                 problem_type=None, crossval_type=None, search_type=None):
+                 problem_type=None, crossval_type=None, search_type=None,
+                 metrics=None):
         
         self.__x_train = x_train
         self.y_train = y_train
@@ -18,10 +25,11 @@ class Config:
         self.y_test = y_test
         self.est = est
         self.feature_selection = feature_selection
-        self.param_dict = param_dict
-        self.problem_type = problem_type
-        self.crossval_type = crossval_type
-        self.search_type = search_type
+        self.__param_dict = param_dict
+        self.__problem_type = problem_type
+        self.__crossval_type = crossval_type
+        self.__search_type = search_type
+        self.__metrics = metrics
         self.mask = None
 
     @property
@@ -30,6 +38,9 @@ class Config:
 
     @x_train.setter
     def x_train(self, value):
+        if np.isnan(value).all():
+            raise InputNanError
+
         if self.feature_selection != 'None':
             temp, self.mask = SELECTION_FUNCTIONS[self.feature_selection](
                 value, self.y_train, self.problem_type
@@ -48,4 +59,57 @@ class Config:
 
     @x_test.setter
     def x_test(self, value):
+        if np.isnan(value).all():
+            raise InputNanError
+
         self.__x_test = self.sc.transform(value[:, self.mask])
+
+    @property
+    def param_dict(self):
+        return self.__param_dict
+
+    @param_dict.setter
+    def param_dict(self, value):
+        if type(value) != dict:
+            raise InputParamError
+        self.__param_dict = value
+
+    @property
+    def problem_type(self):
+        return self.__problem_type
+
+    @problem_type.setter
+    def problem_type(self, value):
+        if value not in ['regression', 'classification']:
+            raise InputProblemTypeError
+        self.__problem_type = value
+
+    @property
+    def crossval_type(self):
+        return self.__crossval_type
+
+    @crossval_type.setter
+    def crossval_type(self, value):
+        if value not in CROSSVAL_FUNCTIONS.keys():
+            raise InputCrossvalTypeError
+        self.__crossval_type = value
+
+    @property
+    def search_type(self):
+        return self.__search_type
+
+    @search_type.setter
+    def search_type(self, value):
+        if value not in HYPSEARCH_FUNCTIONS.keys():
+            raise InputSearchTypeError
+        self.__search_type = value
+
+    @property
+    def metrics(self):
+        return self.__metrics
+
+    @metrics.setter
+    def metrics(self, value):
+        if value not in METRICS_FUNCTIONS.keys():
+            raise InputMetricsError
+        self.__metrics = value
