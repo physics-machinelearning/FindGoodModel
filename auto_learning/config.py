@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from auto_learning.featureselection import SELECTION_FUNCTIONS
-from auto_learning.exceptions import InputNanError
+from auto_learning.exceptions import InputNanError, InputParamError
 
 
 class Config:
@@ -19,10 +19,10 @@ class Config:
         self.y_test = y_test
         self.est = est
         self.feature_selection = feature_selection
-        self.param_dict = param_dict
-        self.problem_type = problem_type
-        self.crossval_type = crossval_type
-        self.search_type = search_type
+        self.__param_dict = param_dict
+        self.__problem_type = problem_type
+        self.__crossval_type = crossval_type
+        self.__search_type = search_type
         self.mask = None
 
     @property
@@ -56,3 +56,13 @@ class Config:
             raise InputNanError
 
         self.__x_test = self.sc.transform(value[:, self.mask])
+
+    @property
+    def param_dict(self):
+        return self.__param_dict
+
+    @param_dict.setter
+    def param_dict(self, value):
+        if type(value) != dict:
+            raise InputParamError
+        self.__param_dict = value
