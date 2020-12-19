@@ -1,7 +1,10 @@
 import numpy as np
 import copy
+import math
 from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score, accuracy_score
+
+from auto_learning.exceptions import MetricsScoreError
 
 # CROSSVAL_FUNCTIONSに交差検証用の関数格納。現状kfoldのみ
 CROSSVAL_FUNCTIONS = {}
@@ -46,9 +49,26 @@ def kfold(est, x, y, metrics):
 
 @register_metrics
 def r2(y_test_list, y_test_predicted_list):
-    return r2_score(y_test_list, y_test_predicted_list)
+    score = r2_score(y_test_list, y_test_predicted_list)
+    if math.isnan(score):
+        raise MetricsScoreError('r2 scoreがNaNです')
+    elif math.isinf(score):
+        raise MetricsScoreError('r2 scoreがinfです')
+    elif score < 0:
+        score = 0
+    elif score > 1:
+        raise MetricsScoreError('r2 scoreが1より大きくなっています')
+    return score
 
 
 @register_metrics
 def accuracy(y_test_list, y_test_predicted_list):
+    if math.isnan(score):
+        raise MetricsScoreError('r2 scoreがNaNです')
+    elif math.isinf(score):
+        raise MetricsScoreError('r2 scoreがinfです')
+    elif score < 0:
+        raise MetricsScoreError('r2 scoreが0未満です')
+    elif score > 1:
+        raise MetricsScoreError('r2 scoreが1より大きくなっています')
     return accuracy_score(y_test_list, y_test_predicted_list)

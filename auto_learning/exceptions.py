@@ -26,3 +26,8 @@ class InputSearchTypeError(Exception):
 class InputMetricsError(Exception):
     """metricsが METRICS_FUNCTIONSに当てはまらない時のエラー"""
     pass
+
+
+class MetricsScoreError(Exception):
+    """metricsが変な値を取った際のエラー"""
+    pass
