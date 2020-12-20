@@ -44,6 +44,7 @@ def kfold(est, x, y, metrics):
     y_test_list = np.array(y_test_list).flatten()[test_indexes]
     y_test_predict_list = np.array(y_test_predict_list).flatten()[test_indexes]
     score = METRICS_FUNCTIONS[metrics](y_test_list, y_test_predict_list)
+    score = float(score)
     return score, y_test_list, y_test_predict_list
 
 
