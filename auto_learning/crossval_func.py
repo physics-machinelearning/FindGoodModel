@@ -5,6 +5,10 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score, accuracy_score
 
 from auto_learning.exceptions import MetricsScoreError
+from auto_learning.logconf import logging
+
+
+logger = logging.getLogger(__name__)
 
 # CROSSVAL_FUNCTIONSに交差検証用の関数格納。現状kfoldのみ
 CROSSVAL_FUNCTIONS = {}
@@ -22,6 +26,8 @@ def register_metrics(func):
 
 @register_func
 def kfold(est, x, y, metrics):
+    logger.info("kfold実行")
+
     kf = KFold(n_splits=3, random_state=44)
     y_test_list = []
     y_test_predict_list = []
@@ -45,6 +51,8 @@ def kfold(est, x, y, metrics):
     y_test_predict_list = np.array(y_test_predict_list).flatten()[test_indexes]
     score = METRICS_FUNCTIONS[metrics](y_test_list, y_test_predict_list)
     score = float(score)
+
+    logger.debug("score = " + str(score))
     return score, y_test_list, y_test_predict_list
 
 
