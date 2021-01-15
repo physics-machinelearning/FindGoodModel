@@ -29,7 +29,7 @@ def register_metrics(func):
 def kfold(est, x, y, metrics):
     logger.info("kfold実行")
 
-    kf = KFold(n_splits=3, random_state=44)
+    kf = KFold(n_splits=3, shuffle=True)
     y_test_list = []
     y_test_predict_list = []
     test_indexes = []
