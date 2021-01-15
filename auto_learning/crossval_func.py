@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 # CROSSVAL_FUNCTIONSに交差検証用の関数格納。現状kfoldのみ
 CROSSVAL_FUNCTIONS = {}
+
 # METRICS_FUNCTIONSに評価関数格納。r2 scoreとaccuracy
 METRICS_FUNCTIONS = {}
 

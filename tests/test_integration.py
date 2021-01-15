@@ -37,8 +37,8 @@ def test_integration_regression():
         y_test_list, y_test_predicted_list, val_score, test_score, est \
             = hyp.hyp_param_search()
         r2 = r2_score(y_test_list, y_test_predicted_list)
-        assert r2 > 0.4
-        assert r2 < 1
+        assert r2 > 0.3
+        assert r2 <= 1
 
 
 def test_integration_classification():
@@ -71,4 +71,4 @@ def test_integration_classification():
             = hyp.hyp_param_search()
         score = accuracy_score(y_test_list, y_test_predicted_list)
         assert score > 0.4
-        assert score < 1
+        assert score <= 1
