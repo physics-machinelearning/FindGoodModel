@@ -5,10 +5,6 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 
 from auto_learning.crossval_func import CROSSVAL_FUNCTIONS
-from auto_learning.logconf import logging
-
-
-logger = logging.getLogger(__name__)
 
 HYPSEARCH_FUNCTIONS = {}
 
@@ -20,13 +16,10 @@ def register_func(func):
 # 全探索
 @register_func
 def brute(config):
-    logger.info("brute関数実行")
     params_list, keys = _generate_all_combinations(config)
     score_list = []
 
     for params in params_list:
-        logger.info(params)
-
         param_dict = {}
         for i, key in enumerate(keys):
             param_dict[key] = params[i]
@@ -39,9 +32,6 @@ def brute(config):
         score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](
             est, config.x_train, config.y_train, config.metrics
         )
-
-        logger.debug("score = " + str(score))
-
         score_list.append(score)
 
     if len(params_list) == 0:
@@ -67,8 +57,6 @@ def brute(config):
 
 @register_func
 def bayes(config):
-    logger.info("bayes実行")
-
     def cv(params):
         new_param_dict = {}
         for i, bound in enumerate(bounds):
@@ -91,8 +79,7 @@ def bayes(config):
         score, _, _ = CROSSVAL_FUNCTIONS[config.crossval_type](
             est, config.x_train, config.y_train, config.metrics
         )
-        logger.debug("score = " + str(score))
-        return -score
+        return -float(score)
 
     if len(config.params_dict.keys()) == 0:
         est = config.est()

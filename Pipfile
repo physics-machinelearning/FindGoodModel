@@ -8,7 +8,9 @@ importlib-metadata = "2.0.0"
 numpy = "*"
 scikit-learn = "*"
 scipy = "*"
+GPy = "*"
 gpyopt = "*"
+auto-learning = {path = "."}
 
 [dev-packages]
 ipykernel = "*"
@@ -16,7 +18,6 @@ jupyter = "*"
 matplotlib = "*"
 seaborn = "*"
 flake8 = "*"
-pytest = "*"
 
 [requires]
 python_version = "3.7"
